@@ -48,6 +48,7 @@ module.exports.init = function(mainContext) {
 		res.send('Received data from ' + name);
 	});
 
+// NOTE: this will need an update based on the new encryption strategy... should be able to re-use most of the code though
 	app.get('/decryptData', function(req, res) {
 		if (req.query.name && req.headers.authorization) {
 			var encryptionKey = req.headers.authorization;

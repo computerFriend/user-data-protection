@@ -68,6 +68,18 @@ function findDocs(query, callback) {
 }
 
 function addUserInfo(userInfo, cb) {
+  // 1) TODO: Check to see if user already exists in DB
+
+
+  // 2) If user doesn't exist, wrap biometric data in array
+  // NOTE: for now, assuming all users are new
+  var firstBiometrics = userInfo.biometrics;
+  userInfo.biometrics = [];
+  userInfo.biometrics.push(firstBiometrics);
+
+  // 3) If user DOES exist, append biometric data array
+// TODO
+
   userInfoCollection.insertOne(userInfo, cb);
 }
 
