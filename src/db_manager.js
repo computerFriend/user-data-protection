@@ -80,5 +80,6 @@ function setIndexes(callback) {
 module.exports = {
   init: init,
   addUserInfo: addUserInfo,
+  findDoc: findDoc,
   findDocs: findDocs
 };
