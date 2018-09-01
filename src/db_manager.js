@@ -2,57 +2,44 @@
 var MongoClient = require('mongodb').MongoClient,
     async = require('async'),
     context,
-    dbConnection;
+    thisDb;
 
 
-function init(contextObj, callback) {
+function init(contextObj, cb) {
 
   context = contextObj;
-  settings = context.settings;
+  config = context.config;
 
   var connectionString = config.DB_CONNECTION_STRING;
   console.debug('Connecting to: ' + connectionString);
 
-  MongoClient.connect(connectionString, function(err, db) {
+  MongoClient.connect(connectionString, { useNewUrlParser: true }, function(err, db) {
 
     if (err || db === null) {
-
       console.fatal('No DB connection', err);
-      callback(err);
+      cb(err);
 
     } else {
 
       console.info('Connected to database!');
-
-      dbConnection = db;
-      // routesCollection = dbConnection.collection('routes');
-
-      setIndexes(function(err) {
-
-        if(err) {
-          console.error('Error returned from setIndexes()',null,null, err);
-        }
-
-        callback();
-      });
+      thisDb = db.db("bdp-dev");
+      userInfoCollection = thisDb.collection('userInfo');
     }
+
+    // setIndexes(function(err) {
+    //   // cb();
+    //   return;
+    // });
+
+
   });
 }
 
-function findDoc(instance, version, upstreamId, action, exclusions, callback) {
-
-  var query = {
-    'instance' : instance,
-    'version' : version,
-    'upstreamId' : upstreamId,
-    'action' : action
-  };
+function findDoc(query, callback) {
 
   console.debug('db.findRoute() running query: ' + JSON.stringify(query));
 
-  // TODO check if query is a key in the cache object
-
-  routesCollection.findOne(query, exclusions, function(error, document) {
+  routesCollection.findOne(query, function(error, document) {
 
     if(error) {
       console.error('Error running query: ' + JSON.stringify(query), error);
@@ -65,31 +52,9 @@ function findDoc(instance, version, upstreamId, action, exclusions, callback) {
 }
 
 // Filter function
-function findDocs(version, instanceId, action, upstreamId, projection, callback) {
+function findDocs(query, callback) {
 
-  var query = {};
-
-  if(version) {
-    query['version'] = version;
-  }
-
-  if(instanceId) {
-    query['instance'] = instanceId;
-  }
-
-  if(action) {
-    query['action'] = action;
-  }
-
-  if (upstreamId) {
-    query['upstreamId'] = upstreamId;
-  }
-
-  if(!projection) {
-    projection = {};
-  }
-
-  routesCollection.find(query, projection).toArray(function(error, documents) {
+  routesCollection.find(query).toArray(function(error, documents) {
 
     if(error) {
 
@@ -103,18 +68,9 @@ function findDocs(version, instanceId, action, upstreamId, projection, callback)
   });
 }
 
-
-
-
-// TODO setup indexes
 function setIndexes(callback) {
+  //placeholder
   callback();
-
-  // routesCollection.ensureIndex({'brand' : 1, 'lastUpdate' : -1} , {}, function(err, indexName) { // for v1, kill me eventually
-  //   if(err) {
-  //     console.error('Error setting index', err);
-  //   }
-  // });
 }
 
 

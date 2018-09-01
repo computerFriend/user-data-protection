@@ -6,6 +6,12 @@
     callback();
   }
 
+  function initDbManager(callback) {
+  context.dbManager = require('./src/db_manager');
+  context.dbManager.init(context);
+  callback();
+}
+
   function initController(callback) {
   context.controller = require('./src/controller');
   context.controller.init(context);
@@ -37,4 +43,4 @@ function serviceReady(err) {
 //
 // });
 
-async.series([ initConfig, initController, listen], serviceReady);
+async.series([ initConfig, initDbManager, initController, listen], serviceReady);
