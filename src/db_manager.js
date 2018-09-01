@@ -38,8 +38,7 @@ function init(contextObj, cb) {
 function findDoc(query, callback) {
 
   console.debug('db.findRoute() running query: ' + JSON.stringify(query));
-
-  routesCollection.findOne(query, function(error, document) {
+  userInfoCollection.findOne(query, function(error, document) {
 
     if(error) {
       console.error('Error running query: ' + JSON.stringify(query), error);
@@ -54,7 +53,7 @@ function findDoc(query, callback) {
 // Filter function
 function findDocs(query, callback) {
 
-  routesCollection.find(query).toArray(function(error, documents) {
+  userInfoCollection.find(query).toArray(function(error, documents) {
 
     if(error) {
 
@@ -68,6 +67,10 @@ function findDocs(query, callback) {
   });
 }
 
+function addUserInfo(userInfo, cb) {
+  userInfoCollection.insertOne(userInfo, cb);
+}
+
 function setIndexes(callback) {
   //placeholder
   callback();
@@ -76,5 +79,6 @@ function setIndexes(callback) {
 
 module.exports = {
   init: init,
+  addUserInfo: addUserInfo,
   findDocs: findDocs
 };

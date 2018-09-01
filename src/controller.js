@@ -3,12 +3,13 @@ const app = require('express')(),
 	fileUpload = require('express-fileupload'),
 	cors = require('cors');
 
-	// app.use(rawBodyParser);
-	app.use(cors());
+	app.use(rawBodyParser);
+	// app.use(cors());
 
 let context,
 	config,
 	PORT,
+	dbManager,
 	HEALTHCHECK = "/admin/healthcheck";
 
 	var cacheData = [];
@@ -16,10 +17,22 @@ let context,
 module.exports.init = function(mainContext) {
 	context = mainContext;
 	config = context.config;
+	dbManager = context.dbManager;
 
 	PORT = parseInt(config.PORT, 10);
 
 	if (config.HEALTHCHECK) HEALTHCHECK = config.HEALTHCHECK;
+
+	app.post('/uploadData', function(req, res) {
+		// console.log('req.body: ' + JSON.stringify(req.body));
+		console.log('req.rawBody: ' + req.rawBody);
+		var userInfo = JSON.parse(req.rawBody);
+		var name = JSON.parse(req.rawBody).name;
+		console.log("Name: " + name);
+		dbManager.addUserInfo(userInfo);
+		//  TODO: add timestamp
+		res.send('Received data from ' + name);
+	});
 
 
 	app.all('*', function(req,res) {
