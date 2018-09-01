@@ -28,16 +28,22 @@ module.exports.init = function(mainContext) {
 	app.post('/uploadData', function(req, res) {
 		console.log('req.rawBody: ' + req.rawBody);
 		var userInfo = JSON.parse(req.rawBody);
+		var biometrics = userInfo.biometrics;
 		var name = JSON.parse(req.rawBody).name;
 		// TODO: make name all lower-case?
 		var encryptionKey = JSON.parse(req.rawBody).encryptionKey;
+		// Remove encryptionKey; don't store it
+		delete userInfo.encryptionKey;
 		//  TODO: add timestamp
 
-		console.log("Encrypting data....");
-		var encryptedData = encrypter.encryptAllValues(userInfo, encryptionKey);
-		console.log("Encrypted data: " + JSON.stringify(encryptedData));
+		console.log("Encrypting biometric data....");
+		userInfo.biometrics = encrypter.encryptAllValues(biometrics, encryptionKey);
+		console.log("Encrypted data: " + JSON.stringify(userInfo));
 
-		dbManager.addUserInfo(encryptedData);
+
+
+		// TODO: make dynamic: check first to see if the entry already exists; if so, append to it
+		dbManager.addUserInfo(userInfo);
 
 		res.send('Received data from ' + name);
 	});
