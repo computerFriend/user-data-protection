@@ -29,7 +29,7 @@ module.exports.init = function(mainContext) {
 		console.log('req.rawBody: ' + req.rawBody);
 		var userInfo = JSON.parse(req.rawBody);
 		var biometrics = userInfo.biometrics;
-		var name = JSON.parse(req.rawBody).name;
+		var name = JSON.parse(req.rawBody).fullName;
 		// TODO: make name all lower-case?
 		var encryptionKey = JSON.parse(req.rawBody).encryptionKey;
 		// Remove encryptionKey; don't store it
@@ -50,10 +50,10 @@ module.exports.init = function(mainContext) {
 
 // NOTE: this will need an update based on the new encryption strategy... should be able to re-use most of the code though
 	app.get('/decryptData', function(req, res) {
-		if (req.query.name && req.headers.authorization) {
+		if (req.query.fullName && req.headers.authorization) {
 			var encryptionKey = req.headers.authorization;
 			// Reformat name (remove dashes)
-			var name = req.query.name.replace('-',' ');
+			var name = req.query.fullName.replace('-',' ');
 			dbManager.findDoc({"name":name}, function(err, doc) {
 				console.log('Found doc for ' + name + ": " + JSON.stringify(doc));
 				console.log('Decrypting....');

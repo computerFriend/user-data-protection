@@ -10,7 +10,7 @@ const IV_LENGTH = 16; // For AES, this is always 16
 
 function encryptAllValues(obj, encryptionKey) {
 	Object.keys(obj).forEach(function(key) {
-		if (key !== "name") obj[key] = encrypt(obj[key], encryptionKey);
+		if (key !== "fullName") obj[key] = encrypt(obj[key], encryptionKey);
 	});
 	return obj;
 }
@@ -27,7 +27,7 @@ function encrypt(text, encryptionKey) {
 
 function decryptAllValues(obj,encryptionKey) {
 	Object.keys(obj).forEach(function(key) {
-		if (key !== "name" && key !== "_id") obj[key] = decrypt(obj[key], encryptionKey);
+		if (key !== "fullName" && key !== "_id") obj[key] = decrypt(obj[key], encryptionKey);
 	});
 	return obj;
 }
