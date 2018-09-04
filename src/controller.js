@@ -31,7 +31,7 @@ module.exports.init = function(mainContext) {
 		https.createServer({
 				key: privateKey,
 				cert: certificate
-		}, app).listen(port);
+		}, app).listen(PORT);
 	} else {
 		app = require('express')();
 	}
