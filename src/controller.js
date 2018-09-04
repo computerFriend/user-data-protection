@@ -1,4 +1,4 @@
-let app = require('express'),
+let app = require('express')(),
 	async = require('async'),
 	fileUpload = require('express-fileupload'),
 	cors = require('cors'),
@@ -8,8 +8,10 @@ let app = require('express'),
 let context,
 	config,
 	PORT,
+	LOCAL,
 	dbManager,
 	encrypter,
+	httpsServer,
 	HEALTHCHECK = "/admin/healthcheck";
 
 	var cacheData = [];
@@ -21,19 +23,18 @@ module.exports.init = function(mainContext) {
 	encrypter = context.encrypter;
 
 	PORT = parseInt(config.PORT, 10) || 8000;
+	LOCAL = config.LOCAL || false;
 
 	if (config.HEALTHCHECK) HEALTHCHECK = config.HEALTHCHECK;
 
-	if (!config.LOCAL) {
+	if (!LOCAL) {
 		var privateKey = fs.readFileSync( '/etc/node/privkey1.pem' );
 		var certificate = fs.readFileSync( '/etc/node/cert1.pem' );
 
-		https.createServer({
+		httpsServer = https.createServer({
 				key: privateKey,
 				cert: certificate
-		}, app).listen(PORT);
-	} else {
-		app = require('express')();
+		}, app);
 	}
 
 
@@ -98,11 +99,19 @@ module.exports.init = function(mainContext) {
 };
 
 module.exports.listen = function(callback) {
-	let server = app.listen(PORT, () => {
-		context.server = server;
+	if (!LOCAL) {
+		httpsServer.listen(PORT);
+		context.server = httpsServer;
 		console.log(`Listening on port ${PORT}...`);
 		callback();
-	});
+	} else {
+		let server = app.listen(PORT, () => {
+			context.server = server;
+			console.log(`Listening on port ${PORT}...`);
+			callback();
+		});
+	}
+
 };
 
 function rawBodyParser(req, res, next) {
