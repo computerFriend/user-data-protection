@@ -1,7 +1,4 @@
 let app = require('express')(),
-	async = require('async'),
-	fileUpload = require('express-fileupload'),
-	cors = require('cors'),
 	fs = require('fs'),
 	https = require('https');
 
@@ -42,6 +39,7 @@ module.exports.init = function(mainContext) {
 
 	app.post('/uploadData', function(req, res) {
 		// console.log('req.rawBody: ' + req.rawBody);
+		console.log('Received biodata input');
 		var userInfo = JSON.parse(req.rawBody);
 		var biometrics = userInfo.biometrics;
 		var name = JSON.parse(req.rawBody).fullName;
