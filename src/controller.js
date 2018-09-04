@@ -26,7 +26,7 @@ module.exports.init = function(mainContext) {
 	if (config.HEALTHCHECK) HEALTHCHECK = config.HEALTHCHECK;
 
 	app.post('/uploadData', function(req, res) {
-		console.log('req.rawBody: ' + req.rawBody);
+		// console.log('req.rawBody: ' + req.rawBody);
 		var userInfo = JSON.parse(req.rawBody);
 		var biometrics = userInfo.biometrics;
 		var name = JSON.parse(req.rawBody).fullName;

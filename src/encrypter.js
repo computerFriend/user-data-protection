@@ -3,9 +3,6 @@
 // NOTE: Shamelessly stole most of this code from: http://vancelucas.com/blog/stronger-encryption-and-decryption-in-node-js/
 
 const crypto = require('crypto');
-
-// TODO: get encryption key from form
-const ENCRYPTION_KEY = "VALgYfeD7ee6NBYKD6E8haD2Hv3Q5zZ8"; // Must be 256 bytes (32 characters)
 const IV_LENGTH = 16; // For AES, this is always 16
 
 function encryptAllValues(obj, encryptionKey) {
