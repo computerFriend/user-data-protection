@@ -63,11 +63,11 @@ module.exports.init = function(mainContext) {
 			var encryptionKey = req.headers.authorization;
 			// Reformat name (remove dashes)
 			var name = req.query.fullName.replace('-',' ');
-			dbManager.findDoc({"name":name}, function(err, doc) {
+			dbManager.findDoc({"fullName":name}, function(err, doc) {
 				if (err) res.jsonp(err);
 				console.log('Found doc for ' + name + ": " + JSON.stringify(doc));
 				console.log('Decrypting biometric data....');
-				var decryptedDoc = encrypter.decryptAllValues(doc.biometrics,encryptionKey);
+				var decryptedDoc = encrypter.decryptAllValues(doc.biometrics[0],encryptionKey);
 				console.log('Decrypted document: ' + JSON.stringify(decryptedDoc));
 				res.jsonp(decryptedDoc);
 			});

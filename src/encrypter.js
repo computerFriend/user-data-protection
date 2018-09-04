@@ -33,15 +33,18 @@ function decryptAllValues(obj,encryptionKey) {
 }
 
 function decrypt(text, encryptionKey) {
- let textParts = text.split(':');
- let iv = new Buffer(textParts.shift(), 'hex');
- let encryptedText = new Buffer(textParts.join(':'), 'hex');
- let decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer(encryptionKey), iv);
- let decrypted = decipher.update(encryptedText);
+	if (text.length < 1) {return new Error('Empty text input!');} else {
+		let textParts = text.split(':');
+	  let iv = new Buffer(textParts.shift(), 'hex');
+	  let encryptedText = new Buffer(textParts.join(':'), 'hex');
+	  let decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer(encryptionKey), iv);
+	  let decrypted = decipher.update(encryptedText);
 
- decrypted = Buffer.concat([decrypted, decipher.final()]);
+	  decrypted = Buffer.concat([decrypted, decipher.final()]);
 
- return decrypted.toString();
+	  return decrypted.toString();
+	}
+
 }
 
 module.exports = { decrypt, decryptAllValues, encrypt, encryptAllValues };
