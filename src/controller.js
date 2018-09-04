@@ -32,6 +32,15 @@ module.exports.init = function(mainContext) {
 		var name = JSON.parse(req.rawBody).fullName;
 		// TODO: make name all lower-case?
 		var encryptionKey = JSON.parse(req.rawBody).encryptionKey;
+		console.log('encryptionKey.length: ' + encryptionKey.length);
+		if (encryptionKey.length < 32) {
+			if (encryptionKey.length === 8) encryptionKey += encryptionKey + encryptionKey + encryptionKey;
+			console.log('Multiplied encryption key: ' + encryptionKey);
+			// TODO: handle other lengths (if they are multiples of 8)
+			// else if (encryptionKey.length % 8 === 0) {
+			//
+			// }
+		}
 		// Remove encryptionKey; don't store it
 		delete userInfo.encryptionKey;
 		//  TODO: add timestamp
@@ -55,9 +64,10 @@ module.exports.init = function(mainContext) {
 			// Reformat name (remove dashes)
 			var name = req.query.fullName.replace('-',' ');
 			dbManager.findDoc({"name":name}, function(err, doc) {
+				if (err) res.jsonp(err);
 				console.log('Found doc for ' + name + ": " + JSON.stringify(doc));
-				console.log('Decrypting....');
-				var decryptedDoc = encrypter.decryptAllValues(doc,encryptionKey);
+				console.log('Decrypting biometric data....');
+				var decryptedDoc = encrypter.decryptAllValues(doc.biometrics,encryptionKey);
 				console.log('Decrypted document: ' + JSON.stringify(decryptedDoc));
 				res.jsonp(decryptedDoc);
 			});

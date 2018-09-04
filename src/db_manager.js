@@ -40,11 +40,14 @@ function findDoc(query, callback) {
   console.debug('db.findRoute() running query: ' + JSON.stringify(query));
   userInfoCollection.findOne(query, function(error, document) {
 
-    if(error) {
+    console.log('db manager found document: ' + document);
+
+    if(error || document == null) {
       console.error('Error running query: ' + JSON.stringify(query), error);
       callback(error, null);
 
     } else {
+      // console.log('db manager found document: ' + document);
       callback(null, document);
     }
   });
