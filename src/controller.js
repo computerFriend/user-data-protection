@@ -1,10 +1,9 @@
-const app = require('express')(),
+let app = require('express'),
 	async = require('async'),
 	fileUpload = require('express-fileupload'),
-	cors = require('cors');
-	// encryptionKey = 'VALgYfeD7ee6NBYKD6E8haD2Hv3Q5zZ8'; // TODO: take from user input
-
-	app.use(rawBodyParser);
+	cors = require('cors'),
+	fs = require('fs'),
+	https = require('https');
 
 let context,
 	config,
@@ -24,6 +23,21 @@ module.exports.init = function(mainContext) {
 	PORT = parseInt(config.PORT, 10) || 8000;
 
 	if (config.HEALTHCHECK) HEALTHCHECK = config.HEALTHCHECK;
+
+	if (!config.LOCAL) {
+		var privateKey = fs.readFileSync( '/etc/node/privkey1.pem' );
+		var certificate = fs.readFileSync( '/etc/node/cert1.pem' );
+
+		https.createServer({
+				key: privateKey,
+				cert: certificate
+		}, app).listen(port);
+	} else {
+		app = require('express')();
+	}
+
+
+	app.use(rawBodyParser);
 
 	app.post('/uploadData', function(req, res) {
 		// console.log('req.rawBody: ' + req.rawBody);
