@@ -21,7 +21,7 @@ module.exports.init = function(mainContext) {
 	dbManager = context.dbManager;
 	encrypter = context.encrypter;
 
-	PORT = parseInt(config.PORT, 10);
+	PORT = parseInt(config.PORT, 10) || 8000;
 
 	if (config.HEALTHCHECK) HEALTHCHECK = config.HEALTHCHECK;
 
@@ -35,7 +35,6 @@ module.exports.init = function(mainContext) {
 		console.log('encryptionKey.length: ' + encryptionKey.length);
 		if (encryptionKey.length < 32) {
 			if (encryptionKey.length === 8) encryptionKey += encryptionKey + encryptionKey + encryptionKey;
-			console.log('Multiplied encryption key: ' + encryptionKey);
 			// TODO: handle other lengths (if they are multiples of 8)
 			// else if (encryptionKey.length % 8 === 0) {
 			//

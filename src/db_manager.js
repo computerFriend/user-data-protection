@@ -16,7 +16,7 @@ function init(contextObj, cb) {
   MongoClient.connect(connectionString, { useNewUrlParser: true }, function(err, db) {
 
     if (err || db === null) {
-      console.fatal('No DB connection', err);
+      console.error('No DB connection', err);
       cb(err);
 
     } else {
