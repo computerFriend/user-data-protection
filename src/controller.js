@@ -46,27 +46,31 @@ module.exports.init = function(mainContext) {
 		// TODO: make name all lower-case?
 		var encryptionKey = JSON.parse(req.rawBody).encryptionKey;
 		console.log('encryptionKey.length: ' + encryptionKey.length);
-		if (encryptionKey.length < 32) {
-			if (encryptionKey.length === 8) encryptionKey += encryptionKey + encryptionKey + encryptionKey;
+		// if (encryptionKey.length < 32) {
+			if (encryptionKey.length === 8) {
+				encryptionKey += encryptionKey + encryptionKey + encryptionKey;
+				// TODO: add timestamp
+				console.log("Encrypting biometric data....");
+				userInfo.biometrics = encrypter.encryptAllValues(biometrics, encryptionKey);
+				console.log("Encrypted data: " + JSON.stringify(userInfo));
+
+				// TODO: make dynamic: check first to see if the entry already exists; if so, append to it
+				delete userInfo.encryptionKey;
+
+				dbManager.addUserInfo(userInfo);
+				res.send('Received data from ' + name);
+
+			} else {
+				res.send('Encryption Key is not the right length!  Must be exactly 8 characters long.');
+			}
 			// TODO: handle other lengths (if they are multiples of 8)
 			// else if (encryptionKey.length % 8 === 0) {
 			//
 			// }
-		}
+		// }
 		// Remove encryptionKey; don't store it
-		delete userInfo.encryptionKey;
-		//  TODO: add timestamp
-
-		console.log("Encrypting biometric data....");
-		userInfo.biometrics = encrypter.encryptAllValues(biometrics, encryptionKey);
-		console.log("Encrypted data: " + JSON.stringify(userInfo));
 
 
-
-		// TODO: make dynamic: check first to see if the entry already exists; if so, append to it
-		dbManager.addUserInfo(userInfo);
-
-		res.send('Received data from ' + name);
 	});
 
 // NOTE: this will need an update based on the new encryption strategy... should be able to re-use most of the code though

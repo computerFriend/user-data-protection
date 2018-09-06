@@ -1,4 +1,6 @@
+// Remove 1 doc by _id
 var MongoClient = require('mongodb').MongoClient,
+	ObjectId = require('mongodb').ObjectID,
 thisDb,
 userInfoCollection;
 
@@ -17,21 +19,11 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, db)
 		console.info('Connected to database!');
 		userInfoCollection = thisDb.collection('userInfo');
 
-		userInfoCollection.find().toArray(function(err,allDocs) {
-			console.log('All docs: ' + JSON.stringify(allDocs,null,2));
+		userInfoCollection.deleteOne({_id:new ObjectId('5b8fea7aaa075b3609604004')}, function(err, results) {
+			if (err) console.err(error);
+			console.log('removed 1 doc');
 		});
 
-		// Find one route
-		// userInfoCollection.findOne({"test":"boop"}, function(err,allDocs) {
-		// 	console.log('All docs: ' + (JSON.stringify(allDocs)));
-		// 	console.log('Keys of allDocs: ' + Object.keys(allDocs));
-		//
-		// });
-		var allDocsCount = userInfoCollection.find().count(function(err, count) {
-			if (err) return;
-			console.log('Total number of docs: ' + count);
-			return;
-		});
 
 	}
 });
