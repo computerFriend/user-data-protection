@@ -1,4 +1,4 @@
-// Remove 1 doc by _id
+// Remove docs based on query
 var MongoClient = require('mongodb').MongoClient,
 	ObjectId = require('mongodb').ObjectID,
 thisDb,

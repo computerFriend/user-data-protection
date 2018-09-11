@@ -9,7 +9,7 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, db)
 
 	if (err || db === null) {
 
-		console.fatal('No DB connection', err);
+		console.error('No DB connection', err);
 		callback(err);
 
 	} else {

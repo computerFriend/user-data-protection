@@ -3,7 +3,7 @@
 var MongoClient = require('mongodb').MongoClient,
 	thisDb, userInfoCollection;
 
-var connectionString = "mongodb://allie:T55liveagain@bdp-dev-shard-00-00-fbfkb.mongodb.net:27017,bdp-dev-shard-00-01-fbfkb.mongodb.net:27017,bdp-dev-shard-00-02-fbfkb.mongodb.net:27017/test?ssl=true&replicaSet=bdp-dev-shard-0&authSource=admin&retryWrites=true";
+var connectionString = "mongodb://allie:borkbork999.@bdp-dev-shard-00-00-fbfkb.mongodb.net:27017,bdp-dev-shard-00-01-fbfkb.mongodb.net:27017,bdp-dev-shard-00-02-fbfkb.mongodb.net:27017/test?ssl=true&replicaSet=bdp-dev-shard-0&authSource=admin&retryWrites=true";
 console.debug('Connecting to: ' + connectionString);
 
 MongoClient.connect(connectionString, {
