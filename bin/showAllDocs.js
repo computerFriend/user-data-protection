@@ -17,14 +17,24 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, db)
 		console.info('Connected to database!');
 		userInfoCollection = thisDb.collection('userInfo');
 
-		userInfoCollection.find().toArray(function(err,allDocs) {
+		userInfoCollection.find({"fullName":"Zulu Tiger"}).toArray(function(err,allDocs) {
 			console.log('All docs: ' + JSON.stringify(allDocs,null,2));
 		});
 
 		// Find one route
 		// userInfoCollection.findOne({"test":"boop"}, function(err,allDocs) {
-		// 	console.log('All docs: ' + (JSON.stringify(allDocs)));
-		// 	console.log('Keys of allDocs: ' + Object.keys(allDocs));
+		//
+		// 	if (err) {
+		// 		console.error("Error: " + err);
+		// 		return;
+		// 	} else if (!allDocs || allDocs.length < 1) {
+		// 		console.error("No docs found for key");
+		// 		return;
+		// 	} else {
+		// 		console.log('All docs: ' + (JSON.stringify(allDocs)));
+		// 		console.log('Keys of allDocs: ' + Object.keys(allDocs));
+		// 	}
+		//
 		//
 		// });
 		var allDocsCount = userInfoCollection.find().count(function(err, count) {

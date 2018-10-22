@@ -19,7 +19,7 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, db)
 		console.info('Connected to database!');
 		userInfoCollection = thisDb.collection('userInfo');
 
-		userInfoCollection.deleteMany({"fullName":"TEST TEST"}, function(err, results) {
+		userInfoCollection.deleteMany({"fullName":"Zulu Tiger"}, function(err, results) {
 			if (err) console.err(error);
 			console.log('removed docs');
 		});

@@ -19,7 +19,7 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, db)
 		console.info('Connected to database!');
 		userInfoCollection = thisDb.collection('userInfo');
 
-		userInfoCollection.deleteOne({_id:new ObjectId('5b8fea7aaa075b3609604004')}, function(err, results) {
+		userInfoCollection.deleteOne({_id:new ObjectId('5bcd437aad0c571c8a637c2a')}, function(err, results) {
 			if (err) console.err(error);
 			console.log('removed 1 doc');
 		});
