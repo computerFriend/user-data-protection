@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 // NOTE: Shamelessly stole most of this code from: http://vancelucas.com/blog/stronger-encryption-and-decryption-in-node-js/
 
@@ -23,23 +23,56 @@ function encrypt(text, encryptionKey) {
 }
 
 function decryptAllValues(obj,encryptionKey) {
+	var errorFlag = false;
+	var errorMsg = "Unknown decryption error";
 	Object.keys(obj).forEach(function(key) {
-		if (key !== "fullName" && key !== "_id") obj[key] = decrypt(obj[key], encryptionKey);
+		if (errorFlag) {
+			console.log("errorFlag is true!");
+			return errorMsg;
+		}
+		if (key !== "fullName" && key !== "_id") {
+			console.log("Decrypting this val: " + obj[key]);
+			obj[key] = decrypt(obj[key], encryptionKey);
+				// check for errors
+				console.log('typeof obj[key]: ' + typeof obj[key]);
+			if (typeof obj[key] !== 'string') {
+				console.log('error condition matched!');
+				errorFlag = true;
+				return new Error(obj[key]);
+			}
+		}
 	});
 	return obj;
 }
 
 function decrypt(text, encryptionKey) {
-	if (text.length < 1) {return new Error('Empty text input!');} else {
-		let textParts = text.split(':');
+	console.log('received this text to decrypt: ' + text);
+	if (text.length < 1) {
+		return new Error('Empty text input!');
+	} else if (encryptionKey.length != 32) {
+		console.log("Error: Encryption key length is " + encryptionKey.length + " instead of 32.");
+	} else {
+		var textParts = text.split(':');
 	  let iv = new Buffer(textParts.shift(), 'hex');
 	  let encryptedText = new Buffer(textParts.join(':'), 'hex');
-	  let decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer(encryptionKey), iv);
-	  let decrypted = decipher.update(encryptedText);
 
-	  decrypted = Buffer.concat([decrypted, decipher.final()]);
+		try {
+			let decipher = crypto.createDecipheriv('aes-256-cbc', new Buffer(encryptionKey), iv);
+		  let decrypted = decipher.update(encryptedText);
+		  decrypted = Buffer.concat([decrypted, decipher.final()]);
+		  return decrypted.toString();
+		} catch (err) {
+			// TODO: find a way to persist / propagate error msgs
+			console.log("Decryption error: " + err);
+			if (err.toString().includes("bad decrypt")) {
+				console.log("Invalid encryption key!");
+				errorMsg = "Invalid encryption key!";
+				return new Error('Invalid encryption key!');
+			} else {
+				return new Error('Unknown decryption error: ' + err);
+			}
+		}
 
-	  return decrypted.toString();
 	}
 
 }

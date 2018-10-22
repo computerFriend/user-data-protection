@@ -26,12 +26,6 @@ function init(contextObj, cb) {
       userInfoCollection = thisDb.collection('userInfo');
     }
 
-    // setIndexes(function(err) {
-    //   // cb();
-    //   return;
-    // });
-
-
   });
 }
 
@@ -40,7 +34,7 @@ function findDoc(query, callback) {
   console.debug('db.findRoute() running query: ' + JSON.stringify(query));
   userInfoCollection.findOne(query, function(error, document) {
 
-    console.log('db manager found document: ' + document);
+    console.log('db manager found document: ' + JSON.stringify(document));
 
     if(error || document == null) {
       console.error('Error running query: ' + JSON.stringify(query), error);
@@ -71,19 +65,52 @@ function findDocs(query, callback) {
 }
 
 function addUserInfo(userInfo, cb) {
-  // 1) TODO: Check to see if user already exists in DB
+  // Check to see if user already exists in DB
+  var userExists = false;
+  var newBiometrics = userInfo.biometrics;
+  console.log('newBiometrics: '+ JSON.stringify(newBiometrics));
 
+  // build query
+  var name = userInfo.fullName;
+  console.log('name:' + name);
 
-  // 2) If user doesn't exist, wrap biometric data in array
-  // NOTE: for now, assuming all users are new
-  var firstBiometrics = userInfo.biometrics;
-  userInfo.biometrics = [];
-  userInfo.biometrics.push(firstBiometrics);
+  findDoc({"fullName":name}, function(err,userDbData) {
 
-  // 3) If user DOES exist, append biometric data array
-// TODO
+    if (err) {
+      console.error("Error: " + err);
+      return;
+    } else if (!userDbData || userDbData.length < 1) {
+      console.log("No doc found for this user; creating a new entry");
+      userInfo.biometrics = [];
+      userInfo.biometrics.push(newBiometrics);
+      userInfoCollection.insertOne(userInfo, cb);
 
-  userInfoCollection.insertOne(userInfo, cb);
+    } else {
+      userExists = true;
+      console.log('Found data for user: ' + (JSON.stringify(userDbData)));
+
+      if (Array.isArray(userDbData.biometrics)) {
+        console.log('biometrics is already an array; pushing it in');
+        userDbData.biometrics.push(newBiometrics);
+        userInfo.biometrics = userDbData.biometrics;
+        // console.log("updated biometrics array: " + JSON.stringify(userInfo.biometrics));
+
+      } else { // transfer to array
+        var allBiometrics = [];
+        allBiometrics.push(userDbData.biometrics);
+        allBiometrics.push(newBiometrics);
+        // console.log("allBiometrics: " + JSON.stringify(allBiometrics));
+        userInfo.biometrics = allBiometrics;
+
+      }
+
+      userInfoCollection.update({"fullName":name},userInfo,cb);
+      // userInfoCollection.insertOne(userInfo, cb);
+
+    }
+
+  });
+
 }
 
 function setIndexes(callback) {
