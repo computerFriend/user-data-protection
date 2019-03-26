@@ -14,7 +14,7 @@
 
   function initEncrypter(cb) {
   	context.encrypter = require('./src/encrypter');
-  	// context.dbManager.init(context);
+  	// context.encrypter.init(context);
   	cb();
   }
 
@@ -22,6 +22,12 @@
   	context.controller = require('./src/controller');
   	context.controller.init(context);
   	callback();
+  }
+
+  function initWinnerFinder(cb) {
+    context.winnerFinder = require('./src/winnerFinder');
+    context.winnerFinder.init(context, cb);
+    // cb();
   }
 
   function listen(callback) {
@@ -49,4 +55,4 @@
   //
   // });
 
-  async.series([initConfig, initDbManager, initEncrypter, initController, listen], serviceReady);
+  async.series([initConfig, initDbManager, initEncrypter, initWinnerFinder, initController, listen], serviceReady);

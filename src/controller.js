@@ -8,7 +8,9 @@ let context,
 	LOCAL,
 	dbManager,
 	encrypter,
+	winnerFinder,
 	httpsServer,
+	encryptionKeyMap,
 	HEALTHCHECK = "/admin/healthcheck";
 
 var cacheData = [];
@@ -18,6 +20,9 @@ module.exports.init = function(mainContext) {
 	config = context.config;
 	dbManager = context.dbManager;
 	encrypter = context.encrypter;
+	winnerFinder = context.winnerFinder;
+
+
 
 	PORT = parseInt(config.PORT, 10) || 8000;
 	LOCAL = config.LOCAL || false;
@@ -57,7 +62,6 @@ module.exports.init = function(mainContext) {
 				if(userDbData) {
 					// Check to see if encryption keys match
 					var test = encrypter.decrypt(userDbData.biometrics[0].bodyFat,encryptionKey);
-					console.log('test: ' + test);
 					if (typeof test !== 'string' || test.toString().includes('Error')) {
 						res.send('Invalid encryptionKey!');
 						return;
@@ -201,6 +205,8 @@ module.exports.init = function(mainContext) {
 	app.get('/decryptData', function(req, res) {
 		if (req.query.fullName && req.headers.authorization) {
 			var encryptionKey = req.headers.authorization;
+			encryptionKey += encryptionKey + encryptionKey + encryptionKey;
+
 			// Reformat name (remove dashes)
 			var name = req.query.fullName.replace('-', ' ');
 			dbManager.findDoc({
@@ -209,14 +215,42 @@ module.exports.init = function(mainContext) {
 				if (err) res.jsonp(err);
 				console.log('Found doc for ' + name + ": " + JSON.stringify(doc));
 				console.log('Decrypting biometric data....');
-				var decryptedDoc = encrypter.decryptAllValues(doc.biometrics[0], encryptionKey);
-				console.log('Decrypted document: ' + JSON.stringify(decryptedDoc));
-				res.jsonp(decryptedDoc);
+				// TODO: decrypt ALL
+				doc.biometrics.forEach(function(entry) {
+					var decryptedDoc = encrypter.decryptAllValues(doc.biometrics[0], encryptionKey);
+					// console.log('Decrypted document: ' + JSON.stringify(decryptedDoc));
+				}, function(err) {
+					if (err) console.log('Error decrypting docs: ' + err);
+					res.jsonp(decryptedDoc);
+
+				});
+
 			});
 
 		} else {
 			res.send('Please provide a name & authorization header.');
 		}
+	});
+
+	app.get('/calculateWinners', function(req, res) {
+		// TODO: add an auth header, to protect winner info
+
+		winnerFinder.findEligibles(function(err, eligibles) {
+			// TODO: error handling
+			winnerFinder.findDeltas(eligibles, function(err, results) {
+				res.jsonp(results);
+			});
+		});
+
+		// async.waterfall([
+		// 	winnerFinder.findEligibles(),
+		// 	winnerFinder.findDeltas()
+		// ], function(err, results) {
+		// 	res.jsonp(results);
+		// });
+
+
+
 	});
 
 

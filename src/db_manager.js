@@ -90,7 +90,6 @@ function addUserInfo(userInfo, cb) {
       console.log('Found data for user: ' + (JSON.stringify(userDbData)));
 
       if (Array.isArray(userDbData.biometrics)) {
-        console.log('biometrics is already an array; pushing it in');
         userDbData.biometrics.push(newBiometrics);
         userInfo.biometrics = userDbData.biometrics;
         // console.log("updated biometrics array: " + JSON.stringify(userInfo.biometrics));

@@ -7,7 +7,9 @@ const IV_LENGTH = 16; // For AES, this is always 16
 
 function encryptAllValues(obj, encryptionKey) {
 	Object.keys(obj).forEach(function(key) {
-		if (key !== "fullName") obj[key] = encrypt(obj[key], encryptionKey);
+		if (key == "bodyFat" || key == "weight" || key == "pulse") {
+		 obj[key] = encrypt(obj[key], encryptionKey);
+	 }
 	});
 	return obj;
 }
@@ -30,11 +32,10 @@ function decryptAllValues(obj,encryptionKey) {
 			console.log("errorFlag is true!");
 			return errorMsg;
 		}
-		if (key !== "fullName" && key !== "_id") {
-			console.log("Decrypting this val: " + obj[key]);
+		if (key == "bodyFat" || key == "weight" || key == "pulse") {
+			// console.log("Decrypting this val: " + obj[key]);
 			obj[key] = decrypt(obj[key], encryptionKey);
 				// check for errors
-				console.log('typeof obj[key]: ' + typeof obj[key]);
 			if (typeof obj[key] !== 'string') {
 				console.log('error condition matched!');
 				errorFlag = true;
@@ -46,7 +47,7 @@ function decryptAllValues(obj,encryptionKey) {
 }
 
 function decrypt(text, encryptionKey) {
-	console.log('received this text to decrypt: ' + text);
+	// console.log('received this text to decrypt: ' + text);
 	if (text.length < 1) {
 		return new Error('Empty text input!');
 	} else if (encryptionKey.length != 32) {
